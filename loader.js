@@ -1,8 +1,8 @@
 import { spawn } from 'child_process'
 
 export class FFmpegFrameLoader {
-  constructor(videoFilePath, width, height, fps = 30) {
-    this.videoFilePath = videoFilePath
+  constructor(videoPath, width, height, fps = 30) {
+    this.videoPath = videoPath
     this.width = width
     this.height = height
     this.frameSize = width * height
@@ -18,7 +18,7 @@ export class FFmpegFrameLoader {
     this.process = spawn('ffmpeg', [
       // '-ss', '00:00:00',
       // '-to', '00:00:10',
-      '-i', this.videoFilePath,
+      '-i', this.videoPath,
       '-vf', `fps=${this.fps},scale=${this.width}:${this.height},format=gray,geq=lum=\'gt(p(X,Y),127)*255\'`,
       '-f', 'rawvideo',
       // '-vframes', '1',

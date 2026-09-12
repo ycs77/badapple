@@ -1,19 +1,22 @@
 import { Renderer } from './render.js'
-import { FFmpegFrameLoader } from './ffmpeg.js'
+import { FFmpegFrameLoader } from './loader.js'
+import { AudioSyncPlayer } from './audio.js'
 
 const width = 80
 const height = 25
-const videoFps = 24
+const fps = 24
 
 // hide cursor
 process.stdout.write('\x1B[?25l')
 
-const loader = new FFmpegFrameLoader('badapple.mp4', width, height, videoFps)
-const renderer = new Renderer(loader, videoFps)
+const frameLoader = new FFmpegFrameLoader('badapple.mp4', width, height, fps)
+const audioPlayer = new AudioSyncPlayer('badapple.mp3', fps)
+const renderer = new Renderer(frameLoader, audioPlayer, fps)
 
 process.on('SIGINT', () => {
   renderer.clear()
-  loader.clear()
+  audioPlayer.clear()
+  frameLoader.clear()
 
   // show cursor
   process.stdout.write('\x1B[?25h')
@@ -23,5 +26,6 @@ process.on('SIGINT', () => {
   process.exit(0)
 })
 
-loader.init()
+audioPlayer.init()
+frameLoader.init()
 renderer.init()

@@ -1,4 +1,11 @@
 {
   "private": true,
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "audio-decode": "^3.12.0",
+    "speaker": "^0.5.5"
+  },
+  "allowScripts": {
+    "speaker@0.5.5": true
+  }
 }

@@ -1,6 +1,7 @@
 export class Renderer {
-  constructor(loader, fps = 30) {
-    this.loader = loader
+  constructor(frameLoader, audioPlayer, fps = 30) {
+    this.frameLoader = frameLoader
+    this.audioPlayer = audioPlayer
     this.fps = fps
     this.frameDuration = 1000 / fps
     this.frameBufferMap = new Map()
@@ -12,7 +13,7 @@ export class Renderer {
   }
 
   init() {
-    this.loader.onFrameLoaded((frameBuffer, frame, width, height) => {
+    this.frameLoader.onFrameLoaded((frameBuffer, frame, width, height) => {
       let output = ''
 
       for (let y = 0; y < height; y++) {
@@ -76,6 +77,8 @@ export class Renderer {
     if (this.frameBufferMap.size === 0) {
       this.isRunning = false
     }
+
+    this.audioPlayer.playFrame(this.frameCount)
 
     process.stdin.write('\x1B[2J\x1B[3J\x1B[H' + output)
 
