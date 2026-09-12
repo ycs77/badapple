@@ -56,4 +56,13 @@ frameLoader.init()
 await frameLoader.waitForFirstFrame()
 
 const startTime = await audioPlayer.start()
+renderer.onEnd(() => {
+  audioPlayer.clear()
+  frameLoader.clear()
+
+  // show cursor
+  process.stdout.write('\x1B[?25h')
+
+  process.stdout.write('\n')
+})
 renderer.start(startTime)

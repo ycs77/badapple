@@ -8,6 +8,7 @@ export class Renderer {
     this.startTime = null
     this.isRunning = false
     this.isWriting = false
+    this.onEndCallback = null
   }
 
   init() {
@@ -38,7 +39,10 @@ export class Renderer {
 
   tick() {
     if (!this.isRunning) {
-      process.stdout.write('\x1B[?25h')
+      this.clear()
+      if (this.onEndCallback) {
+        this.onEndCallback()
+      }
       return
     }
 
@@ -88,6 +92,10 @@ export class Renderer {
         this.tick()
       })
     }
+  }
+
+  onEnd(callback) {
+    this.onEndCallback = callback
   }
 
   clear() {
