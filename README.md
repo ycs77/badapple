@@ -1,6 +1,6 @@
 # Bad Apple
 
-使用 Node.js 在终端中播放 Bad Apple 的練習專案。
+使用 Node.js 在終端機中播放 Bad Apple。
 
 ## 安裝
 
