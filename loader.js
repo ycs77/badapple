@@ -1,0 +1,64 @@
+import { spawn } from 'child_process'
+
+export class FFmpegFrameLoader {
+  constructor(videoFilePath, width, height, fps = 30) {
+    this.videoFilePath = videoFilePath
+    this.width = width
+    this.height = height
+    this.frameSize = width * height
+    this.fps = fps
+    this.frameLoadedCallback = null
+    this.process = null
+    this.bufferArray = []
+    this.totalLength = 0
+    this.frame = 0
+  }
+
+  init() {
+    this.process = spawn('ffmpeg', [
+      // '-ss', '00:00:00',
+      // '-to', '00:00:10',
+      '-i', this.videoFilePath,
+      '-vf', `fps=${this.fps},scale=${this.width}:${this.height},format=gray,geq=lum=\'gt(p(X,Y),127)*255\'`,
+      '-f', 'rawvideo',
+      // '-vframes', '1',
+      '-pix_fmt', 'gray',
+      '-v', 'quiet',
+      '-',
+    ])
+
+    this.process.stdout.on('data', chunk => {
+      this.bufferArray.push(chunk)
+      this.totalLength += chunk.length
+
+      while (this.totalLength >= this.frameSize) {
+        const totalBuffer = Buffer.concat(this.bufferArray, this.totalLength)
+        const frameBuffer = totalBuffer.subarray(0, this.frameSize)
+        this.bufferArray = [totalBuffer.subarray(this.frameSize)]
+        this.totalLength -= this.frameSize
+        this.frame++
+
+        if (this.frameLoadedCallback) {
+          this.frameLoadedCallback(frameBuffer, this.frame, this.width, this.height)
+        }
+      }
+    })
+
+    this.process.stderr.on('data', (data) => {
+      console.error(`FFMpeg 錯誤: ${data}`)
+    })
+
+    this.process.on('close', () => {})
+  }
+
+  onFrameLoaded(callback) {
+    this.frameLoadedCallback = callback
+  }
+
+  clear() {
+    if (this.process) {
+      this.process.kill()
+      this.process = null
+    }
+  }
+}
