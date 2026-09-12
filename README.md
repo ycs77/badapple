@@ -10,6 +10,13 @@ Windows 需要使用 Chocolatey 安裝 Python 與 Visual Studio 2026 的 C++ 工
 choco install python visualstudio2026-workload-vctools -y
 ```
 
+以及如果沒有 FFmpeg 與 yt-dlp 就一起安裝：
+
+```bash
+winget install --id=Gyan.FFmpeg -e
+winget install --id=yt-dlp.yt-dlp -e
+```
+
 然後安裝所需的依賴：
 
 ```bash
