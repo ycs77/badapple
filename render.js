@@ -1,7 +1,8 @@
 export class Renderer {
-  constructor(frameLoader, fps = 30) {
+  constructor(frameLoader, offsetX, offsetY, fps = 30) {
     this.frameLoader = frameLoader
-    this.fps = fps
+    this.offsetX = offsetX
+    this.offsetY = offsetY
     this.frameDuration = 1000 / fps
     this.frameBufferMap = new Map()
     this.startTime = null
@@ -11,15 +12,18 @@ export class Renderer {
 
   init() {
     this.frameLoader.onFrameLoaded((frameBuffer, frame, width, height) => {
-      let output = ''
+      let output = '\n'.repeat(this.offsetY)
 
       for (let y = 0; y < height; y++) {
+        output += ' '.repeat(this.offsetX)
         for (let x = 0; x < width; x++) {
           const pixelIdx = y * width + x
           const pixelValue = frameBuffer[pixelIdx]
           output += pixelValue > 127 ? '@' : ' '
         }
-        output += '\n'
+        if (y < height - 1) {
+          output += '\n'
+        }
       }
 
       this.frameBufferMap.set(frame, output)
