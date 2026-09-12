@@ -10,8 +10,8 @@ const fps = 24
 process.stdout.write('\x1B[?25l')
 
 const frameLoader = new FFmpegFrameLoader('badapple.mp4', width, height, fps)
-const audioPlayer = new AudioSyncPlayer('badapple.mp3', fps)
-const renderer = new Renderer(frameLoader, audioPlayer, fps)
+const audioPlayer = new AudioSyncPlayer('badapple.mp3')
+const renderer = new Renderer(frameLoader, fps)
 
 process.on('SIGINT', () => {
   renderer.clear()
@@ -26,6 +26,11 @@ process.on('SIGINT', () => {
   process.exit(0)
 })
 
-audioPlayer.init()
-frameLoader.init()
+await audioPlayer.init()
 renderer.init()
+frameLoader.init()
+
+await frameLoader.waitForFirstFrame()
+
+const startTime = await audioPlayer.start()
+renderer.start(startTime)
