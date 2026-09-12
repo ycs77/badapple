@@ -4,22 +4,10 @@
 
 ## 安裝
 
-如果是 Ubuntu 系統，請先安裝 `libasound2-dev`：
+Windows 需要使用 Chocolatey 安裝 Python 與 Visual Studio 2026 的 C++ 工具：
 
 ```bash
-sudo apt-get install libasound2-dev
-```
-
-然後加入以下聲音設定到 `~/.asoundrc`：
-
-```bash
-printf 'pcm.!default {\n    type pulse\n}\nctl.!default {\n    type pulse\n}\n' >> ~/.asoundrc
-```
-
-如果是 WSL 中還需要安裝 `libasound2-plugins`：
-
-```bash
-sudo apt-get install libasound2-plugins
+choco install python visualstudio2026-workload-vctools -y
 ```
 
 然後安裝所需的依賴：
