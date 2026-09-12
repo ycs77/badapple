@@ -80,10 +80,10 @@ export class Renderer {
 
     this.audioPlayer.playFrame(this.frameCount)
 
-    process.stdin.write('\x1B[2J\x1B[3J\x1B[H' + output)
+    process.stdout.write('\x1B[2J\x1B[3J\x1B[H' + output)
 
     // const renderingTime = now - this.startRenderingTime
-    // process.stdin.write(`影格時間：${this.formatTime(frameCount / fps)} (frame: ${this.frameCount})\n實際時間：${this.formatTime(renderingTime / 1000)} (frame: ${Math.floor(renderingTime / 1000 * this.fps)})\n`)
+    // process.stdout.write(`影格時間：${this.formatTime(frameCount / fps)} (frame: ${this.frameCount})\n實際時間：${this.formatTime(renderingTime / 1000)} (frame: ${Math.floor(renderingTime / 1000 * this.fps)})\n`)
   }
 
   // formatTime(seconds) {
