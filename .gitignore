@@ -1,4 +1,3 @@
 node_modules/
-
-badapple.mp4
-badapple.mp3
+*.mp4
+*.mp3

@@ -37,7 +37,10 @@ npm install
 下載 Bad Apple 影片：
 
 ```bash
-chmod +x fetch_video.sh
+# CMD
+fetch_video.cmd
+
+# Git Bash
 ./fetch_video.sh
 ```
 
