@@ -25,14 +25,16 @@ if (terminalRatio > originalRatio) {
 let offsetX = Math.floor((terminalWidth - renderedWidth) / 2)
 let offsetY = Math.floor((terminalHeight - renderedHeight) / 2)
 
-const fps = 24
+const fps = 15
+const bufferSeconds = 5
+const bufferFrames = Math.ceil(fps * bufferSeconds)
 
 // hide cursor
 process.stdout.write('\x1B[?25l')
 
 process.stdout.write('\x1B[2J\x1B[3J\x1B[H')
 
-const frameLoader = new FFmpegFrameLoader('badapple.mp4', renderedWidth, renderedHeight, fps)
+const frameLoader = new FFmpegFrameLoader('badapple.mp4', renderedWidth, renderedHeight, fps, bufferFrames)
 const audioPlayer = new AudioSyncPlayer('badapple.mp3')
 const renderer = new Renderer(frameLoader, offsetX, offsetY, fps)
 
@@ -53,7 +55,7 @@ await audioPlayer.init()
 renderer.init()
 frameLoader.init()
 
-await frameLoader.waitForFirstFrame()
+await frameLoader.waitForBuffer()
 
 const startTime = await audioPlayer.start()
 renderer.onEnd(() => {

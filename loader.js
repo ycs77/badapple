@@ -1,35 +1,36 @@
 import { spawn } from 'node:child_process'
 
 export class FFmpegFrameLoader {
-  constructor(videoPath, width, height, fps = 30) {
+  constructor(videoPath, width, height, fps = 30, bufferFrames = 1) {
     this.videoPath = videoPath
     this.width = width
     this.height = height
     this.frameSize = width * height
     this.fps = fps
+    this.bufferFrames = bufferFrames
     this.frameLoadedCallback = null
     this.process = null
     this.bufferArray = []
     this.totalLength = 0
     this.frame = 0
     this.isComplete = false
-    this.firstFramePromise = null
-    this.resolveFirstFrame = null
-    this.rejectFirstFrame = null
+    this.bufferReadyPromise = null
+    this.resolveBufferReady = null
+    this.rejectBufferReady = null
   }
 
-  waitForFirstFrame() {
-    if (!this.firstFramePromise) {
+  waitForBuffer() {
+    if (!this.bufferReadyPromise) {
       throw new Error('FFmpegFrameLoader 必須先完成初始化才能等待影格')
     }
 
-    return this.firstFramePromise
+    return this.bufferReadyPromise
   }
 
   init() {
-    this.firstFramePromise = new Promise((resolve, reject) => {
-      this.resolveFirstFrame = resolve
-      this.rejectFirstFrame = reject
+    this.bufferReadyPromise = new Promise((resolve, reject) => {
+      this.resolveBufferReady = resolve
+      this.rejectBufferReady = reject
     })
 
     this.process = spawn('ffmpeg', [
@@ -58,9 +59,11 @@ export class FFmpegFrameLoader {
         if (this.frameLoadedCallback) {
           this.frameLoadedCallback(frameBuffer, this.frame, this.width, this.height)
         }
-        this.resolveFirstFrame?.()
-        this.resolveFirstFrame = null
-        this.rejectFirstFrame = null
+        if (this.frame >= this.bufferFrames) {
+          this.resolveBufferReady?.()
+          this.resolveBufferReady = null
+          this.rejectBufferReady = null
+        }
       }
     })
 
@@ -69,16 +72,16 @@ export class FFmpegFrameLoader {
     })
 
     this.process.once('error', error => {
-      this.rejectFirstFrame?.(error)
-      this.rejectFirstFrame = null
+      this.rejectBufferReady?.(error)
+      this.rejectBufferReady = null
     })
 
     this.process.on('close', () => {
       this.isComplete = true
 
-      if (this.rejectFirstFrame) {
-        this.rejectFirstFrame(new Error('FFmpeg 未產生任何影格'))
-        this.rejectFirstFrame = null
+      if (this.rejectBufferReady) {
+        this.rejectBufferReady(new Error(`FFmpeg 在載入 ${this.bufferFrames} 個影格前結束`))
+        this.rejectBufferReady = null
       }
 
     })
