@@ -1,5 +1,7 @@
 # Bad Apple
 
+![](screenshot.jpg)
+
 使用 Node.js 在終端機中播放 Bad Apple。
 
 ## 安裝
